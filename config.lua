@@ -6,17 +6,196 @@ filled in as strings with either
 a global executable or a path to
 an executable
 ]]
--- THESE ARE EXAMPLE CONFIGS FEEL FREE TO CHANGE TO WHATEVER YOU WANT
 
+-- vim.opt.breakindent = true
+-- vim.opt.wrap = true -- No Wrap lines
+vim.scriptencoding = 'utf-8'
+vim.opt.encoding = 'utf-8'
+vim.opt.clipboard:append { 'unnamedplus' }
+vim.opt.clipboard:prepend { 'unnamed', 'unnamedplus' }
+vim.keymap.set('n', 'dw', 'vb"_d')
+
+vim.opt.fileencoding = 'utf-8'
+-- fold setting
+vim.opt.foldmethod = 'indent'
+vim.cmd [[
+  augroup remember_folds
+    autocmd!
+    autocmd BufWinLeave *.* mkview
+    autocmd BufWinEnter *.* silent! loadview
+  augroup END
+]]
+vim.cmd [[ autocmd FileType css,scss setlocal iskeyword+=-,?,! ]]
+vim.opt.foldlevelstart = 99
+vim.opt.foldlevel = 20
+-- THESE ARE EXAMPLE CONFIGS FEEL FREE TO CHANGE TO WHATEVER YOU WANT
+lvim.builtin.lualine.options.section_separators = { left = '', right = '' }
+lvim.builtin.lualine.options.component_separators = { left = '', right = '' }
+lvim.builtin.lualine.options.theme = 'dracula'
+-- Plugin
+lvim.plugins = {
+  {
+    'yuttie/comfortable-motion.vim',
+    config = function()
+
+    end
+
+  },
+  {
+    'norcalli/nvim-colorizer.lua',
+    config = function()
+      local status, colorizer = pcall(require, "colorizer")
+      if (not status) then return end
+      colorizer.setup({
+        '*';
+      })
+    end
+  },
+  {
+    "f-person/git-blame.nvim",
+    event = "BufRead",
+    config = function()
+      vim.cmd "highlight default link gitblame SpecialComment"
+      vim.g.gitblame_enabled = 1
+    end,
+  },
+  {
+    "nacro90/numb.nvim",
+    event = "BufRead",
+    config = function()
+      require("numb").setup {
+        show_numbers = true, -- Enable 'number' for the window while peeking
+        show_cursorline = true, -- Enable 'cursorline' for the window while peeking
+      }
+    end,
+  },
+  {
+    'Mofiqul/dracula.nvim',
+    config = function()
+      local dracula = require("dracula")
+      dracula.setup({
+        -- customize dracula color palette
+        colors = {
+          bg = "#282A36",
+          fg = "#F8F8F2",
+          selection = "#44475A",
+          comment = "#6272A4",
+          red = "#FF5555",
+          orange = "#FFB86C",
+          yellow = "#F1FA8C",
+          green = "#50fa7b",
+          purple = "#BD93F9",
+          cyan = "#8BE9FD",
+          pink = "#FF79C6",
+          bright_red = "#FF6E6E",
+          bright_green = "#69FF94",
+          bright_yellow = "#FFFFA5",
+          bright_blue = "#D6ACFF",
+          bright_magenta = "#FF92DF",
+          bright_cyan = "#A4FFFF",
+          bright_white = "#FFFFFF",
+          menu = "#21222C",
+          visual = "#3E4452",
+          gutter_fg = "#4B5263",
+          nontext = "#3B4048",
+        },
+        transparent = true,
+        -- show the '~' characters after the end of buffers
+        show_end_of_buffer = true, -- default false
+        -- use transparent background
+        transparent_bg = true, -- default false
+        -- set custom lualine background color
+        lualine_bg_color = "#44475a", -- default nil
+        -- set italic comment
+        italic_comment = true, -- default false
+        -- overrides the default highlights see `:h synIDattr`
+        overrides = {
+          -- Examples
+          -- NonText = { fg = dracula.colors().white }, -- set NonText fg to white
+          -- NvimTreeIndentMarker = { link = "NonText" }, -- link to NonText highlight
+          -- Nothing = {} -- clear highlight of Nothing
+        },
+      })
+    end
+
+  }
+  -- {
+  --   'marko-cerovac/material.nvim',
+  --   config = function()
+  --     require('material').setup({
+  --       contrast = {
+  --         terminal = false, -- Enable contrast for the built-in terminal
+  --         sidebars = false, -- Enable contrast for sidebar-like windows ( for example Nvim-Tree )
+  --         floating_windows = false, -- Enable contrast for floating windows
+  --         cursor_line = false, -- Enable darker background for the cursor line
+  --         non_current_windows = false, -- Enable darker background for non-current windows
+  --         filetypes = {}, -- Specify which filetypes get the contrasted (darker) background
+  --       },
+
+  --       styles = { -- Give comments style such as bold, italic, underline etc.
+  --         comments = { italic = true },
+  --         strings = { bold = true },
+  --         keywords = { underline = true },
+  --         functions = { bold = true, undercurl = true },
+  --         variables = {},
+  --         operators = {},
+  --         types = {},
+  --       },
+
+  --       plugins = { -- Uncomment the plugins that you use to highlight them
+  --         -- Available plugins:
+  --         -- "dap",
+  --         -- "dashboard",
+  --         -- "gitsigns",
+  --         -- "hop",
+  --         "indent-blankline",
+  --         "lspsaga",
+  --         -- "mini",
+  --         "neogit",
+  --         "nvim-cmp",
+  --         -- "nvim-navic",
+  --         -- "nvim-tree",
+  --         -- "nvim-web-devicons",
+  --         -- "sneak",
+  --         "telescope",
+  --         -- "trouble",
+  --         -- "which-key",
+  --       },
+
+  --       disable = {
+  --         colored_cursor = true, -- Disable the colored cursor
+  --         borders = false, -- Disable borders between verticaly split windows
+  --         background = true, -- Prevent the theme from setting the background (NeoVim then uses your terminal background)
+  --         term_colors = true, -- Prevent the theme from setting terminal colors
+  --         eob_lines = false -- Hide the end-of-buffer lines
+  --       },
+
+  --       high_visibility = {
+  --         lighter = false, -- Enable higher contrast text for lighter style
+  --         darker = false -- Enable higher contrast text for darker style
+  --       },
+
+  --       lualine_style = "stealth", -- Lualine style ( can be 'stealth' or 'default' )
+
+  --       async_loading = true, -- Load parts of the theme asyncronously for faster startup (turned on by default)
+
+  --       custom_colors = nil, -- If you want to everride the default colors, set this to a function
+
+  --       custom_highlights = {}, -- Overwrite highlights with your own
+  --     })
+  --   end
+  -- }
+}
 -- general
 lvim.log.level = "warn"
-lvim.format_on_save.enabled = false
-lvim.colorscheme = "lunar"
+lvim.format_on_save.enabled = true
+lvim.colorscheme = "dracula"
+-- vim.g.material_style = "deep ocean"
 -- to disable icons and use a minimalist setup, uncomment the following
 -- lvim.use_icons = false
 
 -- keymappings [view all the defaults by pressing <leader>Lk]
-lvim.leader = "space"
+lvim.leader = ";"
 -- add your own keymapping
 lvim.keys.normal_mode["<C-s>"] = ":w<cr>"
 lvim.keys.normal_mode["<tab>"] = ":BufferLineCycleNext<CR>"
@@ -67,7 +246,7 @@ lvim.keys.normal_mode["fv"] = ":split<CR>"
 -- TODO: User Config for predefined plugins
 -- After changing plugin config exit and reopen LunarVim, Run :PackerInstall :PackerCompile
 lvim.builtin.alpha.active = true
-lvim.builtin.alpha.mode = "dashboard"
+-- lvim.builtin.alpha.mode = "dashboard"
 lvim.builtin.terminal.active = true
 lvim.builtin.nvimtree.setup.view.side = "left"
 lvim.builtin.nvimtree.setup.renderer.icons.show.git = true
@@ -76,8 +255,8 @@ lvim.builtin.nvimtree.setup.renderer.icons.show.git = true
 lvim.builtin.treesitter.ensure_installed = {
   "bash",
   "c",
-  "javascript",
   "json",
+  "javascript",
   "lua",
   "python",
   "typescript",
@@ -94,10 +273,19 @@ lvim.builtin.treesitter.highlight.enable = true
 -- generic LSP settings
 
 -- -- make sure server will always be installed even if the server is in skipped_servers list
--- lvim.lsp.installer.setup.ensure_installed = {
---     "sumneko_lua",
---     "jsonls",
--- }
+lvim.lsp.installer.setup.ensure_installed = {
+  "sumneko_lua",
+  "jsonls",
+  "tsserver",
+  "tailwindcss"
+}
+local code_actions = require "lvim.lsp.null-ls.code_actions"
+code_actions.setup {
+  {
+    exe = "eslint_d",
+    filetypes = { "typescript", "typescriptreact", "javascript", "javascriptreact", "vue" },
+  },
+}
 -- -- change UI setting of `LspInstallInfo`
 -- -- see <https://github.com/williamboman/nvim-lsp-installer#default-configuration>
 -- lvim.lsp.installer.setup.ui.check_outdated_servers_on_open = false
@@ -187,3 +375,8 @@ lvim.builtin.treesitter.highlight.enable = true
 --     require("nvim-treesitter.highlight").attach(0, "bash")
 --   end,
 -- })
+vim.g["comfortable_motion_no_default_key_mappings"] = 1
+lvim.keys.normal_mode["<ScrollWheelDown>"] = ":call comfortable_motion#flick(40)<CR>"
+lvim.keys.normal_mode["<ScrollWheelUp>"] = ":call comfortable_motion#flick(-40)<CR>"
+lvim.keys.normal_mode["<C-f>"] = ":call comfortable_motion#flick(150)<CR>"
+lvim.keys.normal_mode["<C-u>"] = ":call comfortable_motion#flick(-150)<CR>"
