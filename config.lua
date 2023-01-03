@@ -248,6 +248,8 @@ lvim.keys.normal_mode["fv"] = ":split<CR>"
 lvim.builtin.alpha.active = true
 -- lvim.builtin.alpha.mode = "dashboard"
 lvim.builtin.terminal.active = true
+lvim.builtin.nvimtree.setup.view.preserve_window_proportions = true
+lvim.builtin.nvimtree.setup.view.adaptive_size = true
 lvim.builtin.nvimtree.setup.view.side = "left"
 lvim.builtin.nvimtree.setup.renderer.icons.show.git = true
 
