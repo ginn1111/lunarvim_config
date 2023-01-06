@@ -14,6 +14,19 @@ vim.opt.encoding = 'utf-8'
 vim.opt.clipboard:append { 'unnamedplus' }
 vim.opt.clipboard:prepend { 'unnamed', 'unnamedplus' }
 vim.keymap.set('n', 'dw', 'vb"_d')
+vim.g.nvim_tree_auto_close = '1'
+
+-- auto close when last windown exsit
+vim.api.nvim_create_autocmd("BufEnter", {
+  group = vim.api.nvim_create_augroup("NvimTreeClose", { clear = true }),
+  pattern = "NvimTree_*",
+  callback = function()
+    local layout = vim.api.nvim_call_function("winlayout", {})
+    if layout[1] == "leaf" and vim.api.nvim_buf_get_option(vim.api.nvim_win_get_buf(layout[2]), "filetype") == "NvimTree"
+        and layout[3] == nil then vim.cmd("confirm quit") end
+  end
+})
+
 
 vim.opt.fileencoding = 'utf-8'
 -- fold setting
@@ -28,6 +41,7 @@ vim.cmd [[
 vim.cmd [[ autocmd FileType css,scss setlocal iskeyword+=-,?,! ]]
 vim.opt.foldlevelstart = 99
 vim.opt.foldlevel = 20
+
 -- THESE ARE EXAMPLE CONFIGS FEEL FREE TO CHANGE TO WHATEVER YOU WANT
 lvim.builtin.lualine.options.section_separators = { left = '', right = '' }
 lvim.builtin.lualine.options.component_separators = { left = '', right = '' }
@@ -36,19 +50,13 @@ lvim.builtin.lualine.options.theme = 'dracula'
 lvim.plugins = {
   {
     'yuttie/comfortable-motion.vim',
-    config = function()
-
-    end
-
   },
   {
     'norcalli/nvim-colorizer.lua',
     config = function()
       local status, colorizer = pcall(require, "colorizer")
       if (not status) then return end
-      colorizer.setup({
-        '*';
-      })
+      colorizer.setup()
     end
   },
   {
@@ -101,7 +109,7 @@ lvim.plugins = {
         },
         transparent = true,
         -- show the '~' characters after the end of buffers
-        show_end_of_buffer = true, -- default false
+        -- show_end_of_buffer = true, -- default false
         -- use transparent background
         transparent_bg = true, -- default false
         -- set custom lualine background color
@@ -117,82 +125,15 @@ lvim.plugins = {
         },
       })
     end
-
   }
-  -- {
-  --   'marko-cerovac/material.nvim',
-  --   config = function()
-  --     require('material').setup({
-  --       contrast = {
-  --         terminal = false, -- Enable contrast for the built-in terminal
-  --         sidebars = false, -- Enable contrast for sidebar-like windows ( for example Nvim-Tree )
-  --         floating_windows = false, -- Enable contrast for floating windows
-  --         cursor_line = false, -- Enable darker background for the cursor line
-  --         non_current_windows = false, -- Enable darker background for non-current windows
-  --         filetypes = {}, -- Specify which filetypes get the contrasted (darker) background
-  --       },
-
-  --       styles = { -- Give comments style such as bold, italic, underline etc.
-  --         comments = { italic = true },
-  --         strings = { bold = true },
-  --         keywords = { underline = true },
-  --         functions = { bold = true, undercurl = true },
-  --         variables = {},
-  --         operators = {},
-  --         types = {},
-  --       },
-
-  --       plugins = { -- Uncomment the plugins that you use to highlight them
-  --         -- Available plugins:
-  --         -- "dap",
-  --         -- "dashboard",
-  --         -- "gitsigns",
-  --         -- "hop",
-  --         "indent-blankline",
-  --         "lspsaga",
-  --         -- "mini",
-  --         "neogit",
-  --         "nvim-cmp",
-  --         -- "nvim-navic",
-  --         -- "nvim-tree",
-  --         -- "nvim-web-devicons",
-  --         -- "sneak",
-  --         "telescope",
-  --         -- "trouble",
-  --         -- "which-key",
-  --       },
-
-  --       disable = {
-  --         colored_cursor = true, -- Disable the colored cursor
-  --         borders = false, -- Disable borders between verticaly split windows
-  --         background = true, -- Prevent the theme from setting the background (NeoVim then uses your terminal background)
-  --         term_colors = true, -- Prevent the theme from setting terminal colors
-  --         eob_lines = false -- Hide the end-of-buffer lines
-  --       },
-
-  --       high_visibility = {
-  --         lighter = false, -- Enable higher contrast text for lighter style
-  --         darker = false -- Enable higher contrast text for darker style
-  --       },
-
-  --       lualine_style = "stealth", -- Lualine style ( can be 'stealth' or 'default' )
-
-  --       async_loading = true, -- Load parts of the theme asyncronously for faster startup (turned on by default)
-
-  --       custom_colors = nil, -- If you want to everride the default colors, set this to a function
-
-  --       custom_highlights = {}, -- Overwrite highlights with your own
-  --     })
-  --   end
-  -- }
 }
 -- general
 lvim.log.level = "warn"
 lvim.format_on_save.enabled = true
 lvim.colorscheme = "dracula"
--- vim.g.material_style = "deep ocean"
+lvim.colorscheme_bg = "dark"
 -- to disable icons and use a minimalist setup, uncomment the following
--- lvim.use_icons = false
+-- lvim.use_icons = true
 
 -- keymappings [view all the defaults by pressing <leader>Lk]
 lvim.leader = ";"
@@ -246,7 +187,7 @@ lvim.keys.normal_mode["fv"] = ":split<CR>"
 -- TODO: User Config for predefined plugins
 -- After changing plugin config exit and reopen LunarVim, Run :PackerInstall :PackerCompile
 lvim.builtin.alpha.active = true
--- lvim.builtin.alpha.mode = "dashboard"
+lvim.builtin.alpha.mode = "dashboard"
 lvim.builtin.terminal.active = true
 lvim.builtin.nvimtree.setup.view.preserve_window_proportions = true
 lvim.builtin.nvimtree.setup.view.adaptive_size = true
@@ -378,7 +319,7 @@ code_actions.setup {
 --   end,
 -- })
 vim.g["comfortable_motion_no_default_key_mappings"] = 1
-lvim.keys.normal_mode["<ScrollWheelDown>"] = ":call comfortable_motion#flick(40)<CR>"
-lvim.keys.normal_mode["<ScrollWheelUp>"] = ":call comfortable_motion#flick(-40)<CR>"
+-- lvim.keys.normal_mode["<ScrollWheelDown>"] = ":call comfortable_motion#flick(40)<CR>"
+-- lvim.keys.normal_mode["<ScrollWheelUp>"] = ":call comfortable_motion#flick(-40)<CR>"
 lvim.keys.normal_mode["<C-f>"] = ":call comfortable_motion#flick(150)<CR>"
 lvim.keys.normal_mode["<C-u>"] = ":call comfortable_motion#flick(-150)<CR>"
